@@ -12,35 +12,39 @@ export function GameOn({ courts, players, availablePlayers }) {
   let [loading, setLoading] = React.useState(false)
   let [rounds, setRounds] = React.useState([])
   // console.log('rounds', JSON.stringify(rounds))
-  console.log('rounds.flat()', rounds.flat())
 
   let makeRound = rounds.length ? makeNextRound : makeFirstRound
-  let newRound = () => {
+  let newRound = async () => {
     setLoading(true)
-    makeRound({ availablePlayers, courts, players, playedGames: rounds.flat() }).then(round => {
-      // console.log('round', round)
-      setRounds(r => [...r, round])
-    })
+    let round = await makeRound({ availablePlayers, courts, players, playedGames: rounds.flat() })
+    setRounds(r => [...r, round])
   }
   let setGame = (roundIndex, gameIndex, game) =>
     setRounds(r => {
       return insert([roundIndex, gameIndex], game, r)
     })
 
+  let rebootLastRound = async () => {
+    let round = await makeRound({ availablePlayers, courts, players, playedGames: rounds.flat() })
+    setRounds(rounds => {
+      let newRounds = [...rounds]
+      newRounds[rounds.length - 1] = round
+      return newRounds
+    })
+  }
   return (
     <>
       {rounds.map((round, j) => {
-        let roundPlayers = round.reduce(
-          (arr, game, i) => [...arr, ...game[0], ...game[1]],
-
-          []
-        )
+        let roundPlayers = round.reduce((arr, game, i) => [...arr, ...game[0], ...game[1]], [])
 
         let resting = players.filter(p => !roundPlayers.includes(p))
 
         return (
           <div key={j} className="m0">
-            <h3>Omgång {j + 1}</h3>
+            <h3>
+              Omgång {j + 1}
+              {j === rounds.length - 1 ? <span onClick={rebootLastRound}>↪</span> : null}
+            </h3>
             {round.map((game, i) => (
               <Game
                 key={i}
