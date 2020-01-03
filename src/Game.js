@@ -6,31 +6,25 @@ export function Game({ game, court, setResult }) {
     setResult({ position, value })
   }
   return (
-    <table>
-      <tbody>
-        <tr>
-          <td>
-            <div>Bana {court + 1}</div>
-          </td>
-          {[game[0], game[1]].map(pair => (
-            <td key={pair[0]}>
-              <div>{pair.join(' & ')}</div>
-            </td>
-          ))}
-        </tr>
-        {game[2].map((set, i) => (
-          <tr key={i}>
-            <td>
-              <div>Set {i + 1}</div>
-            </td>
-            {set.map((res, j) => (
-              <td key={j}>
-                <input type="number" value={res} onChange={handleInput([i, j])} />
-              </td>
-            ))}
-          </tr>
+    <div className="row m0">
+      <div style={{ width: '200px' }} className="m0">
+        <div>Bana {court + 1}</div>
+        {[game[0], game[1]].map(pair => (
+          <div key={pair[0]} style={{ height: '30px' }}>
+            {pair[0]}
+            <br />
+            {pair[1]}
+          </div>
         ))}
-      </tbody>
-    </table>
+      </div>
+      {game[2].map((set, i) => (
+        <div key={i}>
+          <div>Set {i + 1}</div>
+          {set.map((res, j) => (
+            <input key={j} type="number" value={res} onChange={handleInput([i, j])} />
+          ))}
+        </div>
+      ))}
+    </div>
   )
 }

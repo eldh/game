@@ -8,31 +8,17 @@ let insert = ([i, j], val, arr) => {
   return n
 }
 
-export function GameOn({ courts, players }) {
+export function GameOn({ courts, players, availablePlayers }) {
   let [loading, setLoading] = React.useState(false)
-  let [rounds, setRounds] = React.useState([
-    // [
-    //   [
-    //     ['Björn Johansson', 'Stefan Eldh'],
-    //     ['Karine Ehlin', 'Freddy Jansson'],
-    //   ],
-    //   [
-    //     ['Lennart Chrona', 'Filip Dolata'],
-    //     ['Pelle Linusson', 'Andreas Jonsson'],
-    //   ],
-    //   [
-    //     ['Abi', 'Henrik Nässén'],
-    //     ['Andreas Eldh', 'Tom Chabousseau'],
-    //   ],
-    // ],
-  ])
-  console.log('rounds', JSON.stringify(rounds))
+  let [rounds, setRounds] = React.useState([])
+  // console.log('rounds', JSON.stringify(rounds))
+  console.log('rounds.flat()', rounds.flat())
 
   let makeRound = rounds.length ? makeNextRound : makeFirstRound
   let newRound = () => {
     setLoading(true)
-    makeRound({ availablePlayers: players, courts, players }).then(round => {
-      console.log('round', round)
+    makeRound({ availablePlayers, courts, players, playedGames: rounds.flat() }).then(round => {
+      // console.log('round', round)
       setRounds(r => [...r, round])
     })
   }
@@ -42,10 +28,19 @@ export function GameOn({ courts, players }) {
     })
 
   return (
-    <div>
+    <>
       {rounds.map((round, j) => {
+        let roundPlayers = round.reduce(
+          (arr, game, i) => [...arr, ...game[0], ...game[1]],
+
+          []
+        )
+
+        let resting = players.filter(p => !roundPlayers.includes(p))
+
         return (
-          <ul key={j}>
+          <div key={j} className="m0">
+            <h3>Omgång {j + 1}</h3>
             {round.map((game, i) => (
               <Game
                 key={i}
@@ -64,12 +59,18 @@ export function GameOn({ courts, players }) {
                 court={i}
               />
             ))}
-          </ul>
+            {resting.length ? (
+              <div>
+                <h4>Vilar</h4>
+                <div className="m0 row">{resting.join(', ')}</div>
+              </div>
+            ) : null}
+          </div>
         )
       })}
       <button disable={loading.toString()} onClick={newRound}>
-        New round
+        Ny omgång
       </button>
-    </div>
+    </>
   )
 }
