@@ -29,7 +29,13 @@ export function GameOn({ settings, players, availablePlayers, rounds, setRounds 
     })
 
   let rebootLastRound = async () => {
-    let round = await makeRound({ settings, availablePlayers, players, playedGames: rounds.flat() })
+    let makeRound = rounds.length > 1 ? makeNextRound : makeFirstRound
+    let round = await makeRound({
+      ...settings,
+      availablePlayers,
+      players,
+      playedGames: rounds.flat(),
+    })
     setRounds(rounds => {
       let newRounds = [...rounds]
       newRounds[rounds.length - 1] = round
