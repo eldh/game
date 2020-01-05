@@ -63,13 +63,23 @@ function App() {
             <span
               onClick={e => {
                 e.preventDefault()
-                if (window.confirm('Är du säker?')) {
+                if (window.confirm('Ta bort alla spelare?')) {
                   setPlayers([])
                   setUnavailablePlayers([])
                 }
               }}
             >
               Rensa alla spelare
+            </span>
+            <span
+              onClick={e => {
+                e.preventDefault()
+                if (window.confirm('Ta bort alla resultat?')) {
+                  setRounds([])
+                }
+              }}
+            >
+              Rensa alla resultat
             </span>
           </TabPanel>
         </TabPanels>
