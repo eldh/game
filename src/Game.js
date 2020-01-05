@@ -2,7 +2,7 @@ import React from 'react'
 
 export function Game({ game, court, setResult }) {
   let handleInput = position => e => {
-    let value = e.target.value
+    let value = parseInt(e.target.value || 0)
     setResult({ position, value })
   }
   return (
@@ -21,7 +21,7 @@ export function Game({ game, court, setResult }) {
         <div key={i}>
           <div>Set {i + 1}</div>
           {set.map((res, j) => (
-            <input key={j} type="number" value={res} onChange={handleInput([i, j])} />
+            <input key={j} type="number" value={res.toString()} onChange={handleInput([i, j])} />
           ))}
         </div>
       ))}

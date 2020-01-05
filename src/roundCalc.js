@@ -4,8 +4,6 @@ const r = require('ramda')
 const shuffle = require('knuth-shuffle').knuthShuffle
 const mapIndexed = r.addIndex(r.map)
 
-const NUMBER_OF_SAMPLES = 20
-
 const makeGame = r.curry(p => {
   return [
     [p[0], p[1]],
@@ -103,10 +101,10 @@ const filterOutGamesWithPlayers = (games, players) => {
   return r.reject(playersIsInGame, games)
 }
 
-const getBestRound = (sortedGames, depth, playedGames) => {
+const getBestRound = (roundSamples, sortedGames, depth, playedGames) => {
   let filteredGames = sortedGames
   let res = []
-  for (let i = 0; i < NUMBER_OF_SAMPLES; i++) {
+  for (let i = 0; i < roundSamples; i++) {
     filteredGames = r.slice(i, Infinity, sortedGames)
     res = r.append(
       r.reduce(
@@ -145,8 +143,8 @@ const gamesForPlayer = r.curry((games, player) => {
   }, games)
 })
 
-export const makeNextRound = ({ courts, players, availablePlayers, playedGames }) => {
-  const usedCourts = Math.min(courts, Math.floor(players.length / 4))
+export const makeNextRound = ({ courts, players, availablePlayers, playedGames, roundSamples }) => {
+  const usedCourts = Math.min(courts, Math.floor(availablePlayers.length / 4))
 
   return Promise.resolve(
     r.map(
@@ -158,6 +156,7 @@ export const makeNextRound = ({ courts, players, availablePlayers, playedGames }
         ],
       ],
       getBestRound(
+        roundSamples,
         allGames(playersForRound(usedCourts, playedGames, availablePlayers)),
         usedCourts,
         playedGames

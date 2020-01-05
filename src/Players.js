@@ -10,9 +10,8 @@ export function Players({ players, setPlayers, unavailablePlayers, setUnavailabl
     })
   }
   return (
-    <div>
+    <>
       <div>
-        <h3>Spelare</h3>
         {players.map(p => {
           let isAvailable = findIndex(x => x === p, unavailablePlayers) === -1
           return (
@@ -49,6 +48,6 @@ export function Players({ players, setPlayers, unavailablePlayers, setUnavailabl
         </div>
         <button>Lägg till spelare</button>
       </form>
-    </div>
+    </>
   )
 }

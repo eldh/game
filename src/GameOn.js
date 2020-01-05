@@ -8,15 +8,19 @@ let insert = ([i, j], val, arr) => {
   return n
 }
 
-export function GameOn({ courts, players, availablePlayers }) {
+export function GameOn({ settings, players, availablePlayers, rounds, setRounds }) {
   let [loading, setLoading] = React.useState(false)
-  let [rounds, setRounds] = React.useState([])
   // console.log('rounds', JSON.stringify(rounds))
 
   let makeRound = rounds.length ? makeNextRound : makeFirstRound
   let newRound = async () => {
     setLoading(true)
-    let round = await makeRound({ availablePlayers, courts, players, playedGames: rounds.flat() })
+    let round = await makeRound({
+      ...settings,
+      availablePlayers,
+      players,
+      playedGames: rounds.flat(),
+    })
     setRounds(r => [...r, round])
   }
   let setGame = (roundIndex, gameIndex, game) =>
@@ -25,7 +29,7 @@ export function GameOn({ courts, players, availablePlayers }) {
     })
 
   let rebootLastRound = async () => {
-    let round = await makeRound({ availablePlayers, courts, players, playedGames: rounds.flat() })
+    let round = await makeRound({ settings, availablePlayers, players, playedGames: rounds.flat() })
     setRounds(rounds => {
       let newRounds = [...rounds]
       newRounds[rounds.length - 1] = round
@@ -51,13 +55,13 @@ export function GameOn({ courts, players, availablePlayers }) {
                 game={game}
                 setResult={({ position, value }) => {
                   let newGame = [...game]
-                  if (!newGame[2]) {
-                    newGame[2] = [
-                      [0, 0],
-                      [0, 0],
-                    ]
-                  }
-                  newGame[2][position[0]][position[1]] = value
+                  // if (!newGame[2]) {
+                  //   newGame[2] = [
+                  //     [0, 0],
+                  //     [0, 0],
+                  //   ]
+                  // }
+                  newGame[2][position[0]][position[1]] = parseInt(value)
                   setGame(j, i, newGame)
                 }}
                 court={i}

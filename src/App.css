@@ -12,6 +12,7 @@ button {
   align-items: flex-start;
   flex-grow: 0;
 }
+
 text {
   display: inline;
 }
@@ -50,4 +51,10 @@ span {
 
 .u {
   text-decoration: line-through;
+}
+[hidden] {
+  display: none;
+}
+[data-reach-tab-list] {
+  flex-direction: row;
 }

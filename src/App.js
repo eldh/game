@@ -1,66 +1,80 @@
 import React from 'react'
 import { Players } from './Players'
 import { GameOn } from './GameOn'
+import { Results } from './Results'
+import { Settings } from './Settings'
 import './App.css'
 import { filter } from 'ramda'
+import createPersistedState from 'use-persisted-state'
+import { Tabs, TabList, TabPanels, TabPanel, Tab } from '@reach/tabs'
+import '@reach/tabs/styles.css'
+
+let useRoundsState = createPersistedState('rounds')
+let usePlayersState = createPersistedState('players')
+let useUnavailablePlayersState = createPersistedState('unavailablePlayerss')
+let useSettingsState = createPersistedState('settings')
 
 function App() {
-  let [unavailablePlayers, setUnavailablePlayers] = React.useState([])
-  let [players, setPlayers] = React.useState([
-    'Mattias Lundkvist',
-    'Andreas Jonsson',
-    'Stefan Eldh',
-    'Andreas Eldh',
-    'Björn Johansson',
-    'Erik Berner-Wik',
-    'Lennart Chrona',
-    'Abi',
-    'Karine Ehlin',
-    'Henrik Nässén',
-    'Tom Chabousseau',
-    'Freddy Jansson',
-    'Jonas Strandberg',
-    'Filip Dolata',
-    'Pelle Linusson',
-  ])
-  let [courts, setCourts] = React.useState(4)
+  let [unavailablePlayers, setUnavailablePlayers] = useUnavailablePlayersState([])
+  let [players, setPlayers] = usePlayersState([])
+  let [settings, setSettings] = useSettingsState({
+    courts: 4,
+    onlyCountOwnPoints: true,
+    winBonus: 10,
+    roundSamples: 1000,
+  })
+  let [rounds, setRounds] = useRoundsState([])
   let availablePlayers = filter(p => !unavailablePlayers.find(v => v === p), players)
 
   return (
-    <div className="kannan">
-      {players.length ? (
-        <GameOn courts={courts} players={players} availablePlayers={availablePlayers} />
-      ) : null}
-      <div className="row c m0">
-        <div>Antal banor</div>
-        <input
-          type="number"
-          value={courts}
-          onChange={e => {
-            let v = e.target.value
-            setCourts(() => v)
-          }}
-        />
-      </div>
-      <Players
-        players={players}
-        setPlayers={setPlayers}
-        unavailablePlayers={unavailablePlayers}
-        setUnavailablePlayers={setUnavailablePlayers}
-      />
+    <>
+      <h1 style={{ marginLeft: '20px' }}>Steffes kanna</h1>
+      <Tabs>
+        <TabList>
+          <Tab>Spelare</Tab>
+          <Tab>Matcher</Tab>
+          <Tab>Ställning</Tab>
+          <Tab>Inställningar</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Players
+              players={players}
+              setPlayers={setPlayers}
+              unavailablePlayers={unavailablePlayers}
+              setUnavailablePlayers={setUnavailablePlayers}
+            />
+          </TabPanel>
+          <TabPanel>
+            <GameOn
+              settings={settings}
+              players={players}
+              availablePlayers={availablePlayers}
+              rounds={rounds}
+              setRounds={setRounds}
+            />
+          </TabPanel>
+          <TabPanel>
+            <Results rounds={rounds} players={players} settings={settings} />
+          </TabPanel>
+          <TabPanel>
+            <Settings settings={settings} setSettings={setSettings} />
 
-      <span
-        onClick={e => {
-          e.preventDefault()
-          if (window.confirm('Är du säker?')) {
-            setPlayers([])
-            setUnavailablePlayers([])
-          }
-        }}
-      >
-        Rensa alla spelare
-      </span>
-    </div>
+            <span
+              onClick={e => {
+                e.preventDefault()
+                if (window.confirm('Är du säker?')) {
+                  setPlayers([])
+                  setUnavailablePlayers([])
+                }
+              }}
+            >
+              Rensa alla spelare
+            </span>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </>
   )
 }
 
