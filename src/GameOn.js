@@ -1,6 +1,7 @@
 import React from 'react'
 import { Game } from './Game'
 import { makeFirstRound, makeNextRound } from './roundCalc'
+import { remove } from 'ramda'
 
 let insert = ([i, j], val, arr) => {
   let n = [...arr]
@@ -42,6 +43,15 @@ export function GameOn({ settings, players, availablePlayers, rounds, setRounds 
       return newRounds
     })
   }
+  let removeRound = i => () => {
+    setRounds(rounds => {
+      // let newRounds = [...rounds]
+      let res = remove(i, 1, rounds)
+      console.log('i,res', i, res)
+
+      return res
+    })
+  }
   return (
     <>
       {rounds.map((round, j) => {
@@ -54,6 +64,7 @@ export function GameOn({ settings, players, availablePlayers, rounds, setRounds 
             <h3>
               Omgång {j + 1}
               {j === rounds.length - 1 ? <span onClick={rebootLastRound}>↪</span> : null}
+              {j !== rounds.length - 1 ? <span onClick={removeRound(j)}>ⓧ</span> : null}
             </h3>
             {round.map((game, i) => (
               <Game
